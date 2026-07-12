@@ -7,3 +7,11 @@
 ### Next Week
 - Work with TUN devices and packet processing.
 - Implement IPv4 parsing and ICMP Echo.
+
+## Visruth's Progress
+- Brushed up on TCP/IP, HTTP requests, DNS and ICMP.
+- Read linux kernel documentation of TUN/TAP.
+- Started working with TUN device.
+### Next Week
+- Parsing IP headers, ICMP header
+- checksum verification of header

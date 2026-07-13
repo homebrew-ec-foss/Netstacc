@@ -15,3 +15,12 @@
 ### Next Week
 - Parsing IP headers, ICMP header
 - checksum verification of header
+
+## Vansh's Progress
+- Learned Git and GitHub basics to set up the repository for version control.
+- Studied network and transport layers, focusing on how IPv4, TCP, and UDP work.
+- Looked into protocols and how data flows through the network stack layers.
+### Next Week
+- Open the TUN device and set up the basic loop to read and write packets.
+- Write the code to parse IPv4 headers and check the checksums.
+- Create the basic ICMP echo logic so the stack can respond to pings.

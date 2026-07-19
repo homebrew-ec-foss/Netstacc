@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <net/if.h>
-#include "../include/tuntap.h"
+#include "../include/tun.h"
 #include "../include/ipv4.h" // Added this!
 
 int main() {

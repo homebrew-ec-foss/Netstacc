@@ -9,3 +9,13 @@
 - Implement a UDP parser and generate UDP responses.
 - Build a dashboard to display transmitted and received UDP and ICMP packet statistics.
 
+## Visruth's Progress
+- Implemented ICMP parsing and ICMP reply
+- Read through how IP header parsing works.
+- read the algorithm for checksum verification
+
+### Next Week
+- Desinging and implementing dashboard.
+- Implement TCP, handle connections
+- try to implement HTTP/1.1.
+

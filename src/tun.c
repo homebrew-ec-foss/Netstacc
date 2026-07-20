@@ -6,7 +6,7 @@
 #include <net/if.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "../include/tuntap.h"
+#include "../include/tun.h"
 
 int tun_alloc(char *dev) {
     struct ifreq ifr;

@@ -16,6 +16,11 @@ int main() {
         int nread = read(tun_fd, buffer, sizeof(buffer));
         if (nread < 0) continue;
 
+	uint8_t ip_version = (buffer[0] >> 4) & 0x0F;
+        if (ip_version != 4) {
+            continue; // Drop IPv6 (e.g. protocol 128) and non-IPv4 traffic
+        }
+
         // Cast the raw bucket into our structured IPv4 glasses
         struct ipv4_header *ip = (struct ipv4_header *)buffer;
 

@@ -19,3 +19,12 @@
 - Implement TCP, handle connections
 - try to implement HTTP/1.1.
 
+## Vansh's Progress
+- Set up the TUN device interface to pull raw network packets directly from the Linux kernel.
+- Wrote the main packet capture loop to continuously read raw bytes from the interface.
+- Created the memory structures for IPv4 and ICMP headers to easily parse the incoming data.
+- Added a bitwise filter to automatically drop IPv6 and other non-IPv4 traffic.
+
+### Next Week
+- Implement UDP parsing and get a basic UDP round-trip working.
+- Set up a live packet counter that prints stats directly to the terminal.

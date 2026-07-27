@@ -3,8 +3,9 @@
 #include <unistd.h>
 #include <net/if.h>
 #include "../include/tun.h"
-#include "../include/ipv4.h" // Added this!
-
+#include "../include/ipv4.h" 
+#include "../include/classifier.h" 
+#include "../include/checksum.h"
 int main() {
     char tun_name[IFNAMSIZ] = "tun0";
     int tun_fd = tun_alloc(tun_name);
@@ -26,6 +27,11 @@ int main() {
 
         // Print the protocol number! (1 = ICMP, 6 = TCP, 17 = UDP)
         printf(" -> Captured %d bytes | Protocol: %d\n", nread, ip->protocol);
+	
+	if (verify_ip_checksum(ip) != 1) {
+    		printf("    [!] Bad Checksum! Dropping packet.\n");
+    		continue; // Throw it away and start the loop over
+	}
     }
     return 0;
 }

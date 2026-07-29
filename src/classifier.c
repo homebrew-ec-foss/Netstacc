@@ -1,12 +1,35 @@
 #include <stdio.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#include "../include/ipv4.h"
-#include "../include/classifier.h"
+#include <unistd.h>
+#include "ipv4.h"
+#include "icmp.h"
+#include "classifier.h"
 
 /* SECTION 4: Protocol classifier */
 
-void handle_icmp(struct ipv4_header *ip, uint8_t *buf, int tun_fd);
+void handle_icmp(struct ipv4_header *ip, uint8_t *buf, int tun_fd){
+    struct icmp_header* icmp_header ;
+    if ((icmp_header = parse_icmp(buf,ip))==NULL){
+        printf("ERR: ICMP header is invalid");
+        return;
+    }
+    printf(" -> ICMP packet\n");
+    printf("\tid : %d\n"
+           "\tSequence number : %d\n"
+           "\tType : %d\n"
+           "\tCode : %d\n",
+           ntohs(icmp_header->id),
+           ntohs(icmp_header->sqnum),
+           (icmp_header->type),
+           icmp_header->code);
+
+    if (icmp_header->type == 8){
+        reply_icmp(ip, icmp_header);
+        write(tun_fd, buf, ntohs(ip->total_length));
+        printf(" -> reply ICMP packet sent\n");
+    }
+}
 
 void handle_tcp(struct ipv4_header *ip, uint8_t *payload, int len) {
     printf("  -> TCP packet (not built yet, this is Week 4)\n");

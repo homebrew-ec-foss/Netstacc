@@ -26,14 +26,11 @@ Netstacc processes raw packets through a virtual TUN interface, parses IPv4 head
 ```
 
 2. Compile and run the stack:
-```bash
+```
 make clean
 make
 make run
-
 ```
-
-
 
 *Note: The terminal running `make run` must stay open to process packets and render the live UI.*
 
@@ -47,7 +44,7 @@ Open a second terminal window to send test traffic through the virtual tunnel.
 
 Send a standard ping to the tunnel subnet:
 
-```bash
+```
 ping 10.0.0.2
 
 ```
@@ -58,13 +55,9 @@ The stack will capture the request, verify the header, transmit a reply, and upd
 
 Send raw text data to the stack using Netcat:
 
-```bash
+```
 nc -u 10.0.0.2 53
 
 ```
 
 Type any message and press Enter. The console will display the source port, destination port, packet length, checksum status, and the extracted text payload.
-
-```
-
-```

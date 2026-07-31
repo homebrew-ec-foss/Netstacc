@@ -2,12 +2,13 @@ CC=clang
 CFLAGS=-I./include
 
 ODIR = build
-_OBJ = checksum.o classifier.o icmp.o tun.o main.o
+# Added dashboard.o to the object list
+_OBJ = checksum.o classifier.o icmp.o tun.o dashboard.o main.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 TUN_IP = 10.0.0.1/24
 
-run :$(ODIR)/netstacc
+run: $(ODIR)/netstacc
 	sudo $(ODIR)/netstacc
 
 $(ODIR)/%.o: src/%.c
@@ -15,7 +16,6 @@ $(ODIR)/%.o: src/%.c
 
 $(ODIR)/netstacc: $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS)
-
 
 .PHONY: clean setup
 
@@ -25,4 +25,4 @@ setup:
 	sudo ip link set up dev tun0
 
 clean:
-	rm $(ODIR)/*
+	rm -f $(ODIR)/*

@@ -20,4 +20,13 @@
 - Implement TCP handshake
 - Implement packetization
 
+## Vansh's Progress
+- Implemented a live terminal dashboard UI using ANSI escape sequences.
+- Abstracted UI logic into `dashboard.c` and `dashboard.h` to isolate it from backend components.
+- Integrated the dashboard with the existing ICMP and UDP handlers to display real-time network states.
+- Added live metric tracking for total `rx_bytes`, packet counts, and checksum validation status.
 
+### Next Week
+- Transition UI to support stateful TCP tracking.
+- Map TCP state machine transitions (`LISTEN`, `SYN_RCVD`, `ESTABLISHED`) to the dashboard.
+- Assist with TCP 3-way handshake implementation.

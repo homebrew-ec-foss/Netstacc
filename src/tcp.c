@@ -1,12 +1,7 @@
-<<<<<<< HEAD
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <arpa/inet.h>
-=======
-#include <string.h>
-#include <netinet/in.h>
->>>>>>> 71b7b9f (feat: parses tcp header)
 #include "../include/ipv4.h"
 #include "../include/checksum.h"
 #include "../include/tcp.h"

@@ -1,21 +1,20 @@
 CC=clang
 CFLAGS=-I./include
 
-SRC = $(wildcard src/*.c)
 ODIR = build
-OBJ = $(patsubst src/%.c,build/%.o,$(SRC))
+_OBJ = checksum.o classifier.o icmp.o tun.o main.o
+OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 TUN_IP = 10.0.0.1/24
 
-run : netstacc
+run :$(ODIR)/netstacc
 	sudo $(ODIR)/netstacc
-
 
 $(ODIR)/%.o: src/%.c
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-netstacc: $(OBJ)
-	$(CC) $(CFLAGS) $(OBJ) -o build/netstacc
+$(ODIR)/netstacc: $(OBJ)
+	$(CC) -o $@ $^ $(CFLAGS)
 
 
 .PHONY: clean setup

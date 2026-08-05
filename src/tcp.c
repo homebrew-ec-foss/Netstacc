@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <arpa/inet.h>
+#include <netinet/in.h>
+#include <stdio.h>
 #include "../include/ipv4.h"
 #include "../include/checksum.h"
 #include "../include/tcp.h"
@@ -12,7 +14,7 @@ struct tcp_header *parse_tcp(uint8_t *buffer, struct ipv4_header *ip_header, int
     int remaining_len = packet_len - ip_header_len;
 
     if (remaining_len < (int)sizeof(struct tcp_header)) {
-        return NULL; 
+        return NULL;
     }
 
     struct tcp_header *tcp = (struct tcp_header *) tcp_data;
@@ -27,7 +29,7 @@ uint8_t *tcp_payload(uint8_t *buffer, struct ipv4_header *ip_header, struct tcp_
     int ip_header_len = (ip_header->version_ihl & 0x0f) * 4;
     return buffer + ip_header_len + tcp_header_len(tcp);
 }
-int verify_tcp_checksum(struct ipv4_header *ip_header, struct tcp_header *tcp, int segment_len) {
+int compute_tcp_checksum(struct ipv4_header *ip_header, struct tcp_header *tcp, int segment_len) {
     struct tcp_pseudo_header pseudo;
     pseudo.src_ip     = ip_header->src_ip;
     pseudo.dest_ip    = ip_header->dest_ip;
@@ -44,5 +46,37 @@ int verify_tcp_checksum(struct ipv4_header *ip_header, struct tcp_header *tcp, i
 
     uint16_t result = compute_checksum(buf, total_len);
     free(buf);
-    return result == 0;
+    return result;
 }
+
+int debug_tcp_packet(struct tcp_header* tcp_header){
+    return printf("\tSrc port : %d\n"
+           "\tDest port : %d\n"
+            "\tCWR: %d\n"
+            "\tECE: %d\n"
+            "\tURG: %d\n"
+            "\tACK: %d\n"
+            "\tPSH: %d\n"
+            "\tRST: %d\n"
+            "\tSYN: %d\n"
+            "\tFIN: %d\n"
+           "\tChecksum : 0x%04x\n"
+           "\tseq num: %u\n"
+           "\tack num: %u\n",
+           ntohs(tcp_header->src_port),
+           ntohs(tcp_header->dest_port),
+           (tcp_header->flags&128U),
+           (tcp_header->flags&64U),
+           (tcp_header->flags&32U),
+           (tcp_header->flags&16U),
+           (tcp_header->flags&8U),
+           (tcp_header->flags&4U),
+           (tcp_header->flags&2U),
+           (tcp_header->flags&1U),
+           ntohs(tcp_header->checksum),
+           ntohl(tcp_header->seq_num),
+           ntohl(tcp_header->ack_num)
+           );
+}
+
+

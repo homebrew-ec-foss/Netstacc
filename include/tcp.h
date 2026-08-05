@@ -16,6 +16,21 @@ struct tcp_header {
 } __attribute__((packed));
 
 
+typedef enum {
+    LISTEN,
+    SYNC_RCVD,
+    SYNC_SENT,
+    ESTAB,
+    FIN_WAIT_1,
+    FIN_WAIT_2,
+    CLOSE_WAIT,
+    TIME_WAIT,
+    LAST_ACK,
+    CLOSING,
+    CLOSED,
+} tcp_connection_states;
+
+
 #define TCP_FIN 0x01
 #define TCP_SYN 0x02
 #define TCP_RST 0x04
@@ -37,6 +52,7 @@ static inline int tcp_header_len(const struct tcp_header *tcp) {
 
 struct tcp_header *parse_tcp(uint8_t *buffer, struct ipv4_header *ip_header, int packet_len);
 uint8_t *tcp_payload(uint8_t *buffer, struct ipv4_header *ip_header, struct tcp_header *tcp);
-int verify_tcp_checksum(struct ipv4_header *ip_header, struct tcp_header *tcp, int segment_len);
+int compute_tcp_checksum(struct ipv4_header *ip_header, struct tcp_header *tcp, int segment_len);
+int debug_tcp_packet(struct tcp_header* tcp_header);
 
 #endif

@@ -2,58 +2,62 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <unistd.h>
-#include "ipv4.h"
-#include "icmp.h"
-#include "udp.h"
-#include "classifier.h"
-void handle_icmp(struct ipv4_header *ip, uint8_t *buf, int tun_fd){
-    struct icmp_header* icmp_header ;
-    if ((icmp_header = parse_icmp(buf,ip))==NULL){
-        printf("ERR: ICMP header is invalid");
-        return;
+#include "../include/ipv4.h"
+#include "../include/icmp.h"
+#include "../include/udp.h"
+#include "../include/classifier.h"
+#include "../include/dashboard.h"
+
+void handle_icmp(struct ipv4_header *ip, uint8_t *buf, int tun_fd) {
+    struct icmp_header* icmp_header;
+    if ((icmp_header = parse_icmp(buf, ip)) == NULL) {
+        return; // Drop invalid ICMP packets
     }
-    printf(" -> ICMP packet\n");
-    printf("\tid : %d\n"
-           "\tSequence number : %d\n"
-           "\tType : %d\n"
-           "\tCode : %d\n",
-           ntohs(icmp_header->id),
-           ntohs(icmp_header->sqnum),
-           (icmp_header->type),
-           icmp_header->code);
-    if (icmp_header->type == 8){
+
+    // Track ICMP RX metrics
+    live_stats.icmp.rx_packets++;
+    live_stats.icmp.rx_bytes += ntohs(ip->total_length);
+
+    // Process Echo Request (Ping)
+    if (icmp_header->type == 8) {
         reply_icmp(ip, icmp_header);
-        write(tun_fd, buf, ntohs(ip->total_length));
-        printf(" -> reply ICMP packet sent\n");
+        int bytes_written = write(tun_fd, buf, ntohs(ip->total_length));
+        
+        // Track ICMP TX metrics
+        if (bytes_written > 0) {
+            live_stats.icmp.tx_packets++;
+            live_stats.icmp.tx_bytes += bytes_written;
+            live_stats.total_tx_packets++;
+            live_stats.total_tx_bytes += bytes_written;
+        }
     }
 }
+
 void handle_tcp(struct ipv4_header *ip, uint8_t *payload, int len) {
-    printf("  -> TCP packet (not built yet, this is Week 4)\n");
+    // Track TCP RX metrics (Handshake implementation pending)
+    live_stats.tcp.rx_packets++;
+    live_stats.tcp.rx_bytes += ntohs(ip->total_length);
 }
+
 void handle_udp(struct ipv4_header *ip, uint8_t *payload, int len) {
     struct udp_header *udp = (struct udp_header *) payload;
 
-    printf(" -> UDP packet\n");
-    printf("\tSrc port : %d\n"
-           "\tDst port : %d\n"
-           "\tLength   : %d\n"
-           "\tChecksum : 0x%04x\n",
-           ntohs(udp->src_port),
-           ntohs(udp->dst_port),
-           ntohs(udp->length),
-           ntohs(udp->checksum));
-
-    uint16_t result = compute_udp_checksum(ip, udp, len);
-    if (result == 0) {
-        printf(" -> UDP checksum: OK\n");
-    } else {
-        printf(" -> UDP checksum: INVALID (result=0x%04x)\n", result);
+    // Verify UDP checksum; drop and log if invalid
+    if (compute_udp_checksum(ip, udp, len) != 0) {
+        live_stats.drops.bad_checksum++;
+        return; 
     }
+
+    // Track valid UDP RX metrics
+    live_stats.udp.rx_packets++;
+    live_stats.udp.rx_bytes += ntohs(ip->total_length);
 }
+
 void classify_protocol(struct ipv4_header *ip, uint8_t *buf, int tun_fd) {
     int header_len = (ip->version_ihl & 0x0f) * 4;
     int payload_len = ntohs(ip->total_length) - header_len;
     uint8_t *payload = buf + header_len;
+
     switch (ip->protocol) {
         case IPPROTO_ICMP:
             handle_icmp(ip, buf, tun_fd);
@@ -65,6 +69,7 @@ void classify_protocol(struct ipv4_header *ip, uint8_t *buf, int tun_fd) {
             handle_udp(ip, payload, payload_len);
             break;
         default:
-            printf("  -> unknown protocol %d, dropping\n", ip->protocol);
+            live_stats.drops.unknown_proto++;
+            break;
     }
 }

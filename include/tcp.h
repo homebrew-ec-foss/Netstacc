@@ -1,5 +1,6 @@
 #ifndef TCP_H
 #define TCP_H
+
 #include <stdint.h>
 #include "ipv4.h"
 
@@ -9,12 +10,11 @@ struct tcp_header {
     uint32_t seq_num;
     uint32_t ack_num;
     uint8_t  data_offset_reserved;
-    uint8_t  flags;                
+    uint8_t  flags;
     uint16_t window;
     uint16_t checksum;
     uint16_t urgent_ptr;
 } __attribute__((packed));
-
 
 #define TCP_FIN 0x01
 #define TCP_SYN 0x02
@@ -37,6 +37,11 @@ static inline int tcp_header_len(const struct tcp_header *tcp) {
 
 struct tcp_header *parse_tcp(uint8_t *buffer, struct ipv4_header *ip_header, int packet_len);
 uint8_t *tcp_payload(uint8_t *buffer, struct ipv4_header *ip_header, struct tcp_header *tcp);
+
+
+uint16_t compute_tcp_checksum(struct ipv4_header *ip_header, struct tcp_header *tcp, int segment_len);
 int verify_tcp_checksum(struct ipv4_header *ip_header, struct tcp_header *tcp, int segment_len);
+
+void reply_tcp_finalize(struct ipv4_header *ip_header, struct tcp_header *tcp, int tcp_len);
 
 #endif

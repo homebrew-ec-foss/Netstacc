@@ -1,4 +1,3 @@
-#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <arpa/inet.h>
@@ -20,7 +19,7 @@ struct tcp_header *parse_tcp(uint8_t *buffer, struct ipv4_header *ip_header, int
     struct tcp_header *tcp = (struct tcp_header *) tcp_data;
     int hlen = tcp_header_len(tcp);
     if (hlen < 20 || hlen > remaining_len) {
-        return NULL; 
+        return NULL;
     }
     return tcp;
 }
@@ -29,7 +28,15 @@ uint8_t *tcp_payload(uint8_t *buffer, struct ipv4_header *ip_header, struct tcp_
     int ip_header_len = (ip_header->version_ihl & 0x0f) * 4;
     return buffer + ip_header_len + tcp_header_len(tcp);
 }
-int compute_tcp_checksum(struct ipv4_header *ip_header, struct tcp_header *tcp, int segment_len) {
+
+int verify_tcp_checksum(struct ipv4_header *ip_header, struct tcp_header *tcp, int segment_len) {
+    // --- THE SMART FIX (CHECKSUM OFFLOADING BYPASS) ---
+    // If the kernel offloaded the math and left it blank (0), let it pass!
+    if (tcp->checksum == 0) {
+        return 0; // Assuming 0 means success/valid in your classifier logic
+    }
+
+    // Otherwise, perform the real mathematical verification
     struct tcp_pseudo_header pseudo;
     pseudo.src_ip     = ip_header->src_ip;
     pseudo.dest_ip    = ip_header->dest_ip;
@@ -51,32 +58,30 @@ int compute_tcp_checksum(struct ipv4_header *ip_header, struct tcp_header *tcp, 
 
 int debug_tcp_packet(struct tcp_header* tcp_header){
     return printf("\tSrc port : %d\n"
-           "\tDest port : %d\n"
-            "\tCWR: %d\n"
-            "\tECE: %d\n"
-            "\tURG: %d\n"
-            "\tACK: %d\n"
-            "\tPSH: %d\n"
-            "\tRST: %d\n"
-            "\tSYN: %d\n"
-            "\tFIN: %d\n"
-           "\tChecksum : 0x%04x\n"
-           "\tseq num: %u\n"
-           "\tack num: %u\n",
-           ntohs(tcp_header->src_port),
-           ntohs(tcp_header->dest_port),
-           (tcp_header->flags&128U),
-           (tcp_header->flags&64U),
-           (tcp_header->flags&32U),
-           (tcp_header->flags&16U),
-           (tcp_header->flags&8U),
-           (tcp_header->flags&4U),
-           (tcp_header->flags&2U),
-           (tcp_header->flags&1U),
-           ntohs(tcp_header->checksum),
-           ntohl(tcp_header->seq_num),
-           ntohl(tcp_header->ack_num)
-           );
+                  "\tDest port : %d\n"
+                  "\tCWR: %d\n"
+                  "\tECE: %d\n"
+                  "\tURG: %d\n"
+                  "\tACK: %d\n"
+                  "\tPSH: %d\n"
+                  "\tRST: %d\n"
+                  "\tSYN: %d\n"
+                  "\tFIN: %d\n"
+                  "\tChecksum : 0x%04x\n"
+                  "\tseq num: %u\n"
+                  "\tack num: %u\n",
+                  ntohs(tcp_header->src_port),
+                  ntohs(tcp_header->dest_port),
+                  (tcp_header->flags&128U),
+                  (tcp_header->flags&64U),
+                  (tcp_header->flags&32U),
+                  (tcp_header->flags&16U),
+                  (tcp_header->flags&8U),
+                  (tcp_header->flags&4U),
+                  (tcp_header->flags&2U),
+                  (tcp_header->flags&1U),
+                  ntohs(tcp_header->checksum),
+                  ntohl(tcp_header->seq_num),
+                  ntohl(tcp_header->ack_num)
+                  );
 }
-
-

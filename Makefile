@@ -8,8 +8,8 @@ HEADERS = $(wildcard include/*.h)
 
 TUN_IP = 10.0.0.1/24
 
-run : build 
-	$(ODIR)/netstacc
+run : build
+	sudo $(ODIR)/netstacc
 
 $(ODIR)/%.o: src/%.c $(HEADERS)
 	$(CC) -c -o $@ $< $(CFLAGS)
@@ -25,4 +25,4 @@ setup:
 	sudo ip link set up dev tun0
 
 clean:
-	rm $(ODIR)/*
+	rm -rf $(ODIR)/*

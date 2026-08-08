@@ -11,6 +11,6 @@ void handle_tcp(struct ipv4_header *ip, uint8_t *payload, int len, int tun_fd, u
 
 void handle_udp(struct ipv4_header *ip, uint8_t *payload, int len);
 
-void classify_protocol(struct ipv4_header *ip, uint8_t *buf, int tun_fd, int nread);
+void classify_protocol(struct ipv4_header *ip, uint8_t *buf, int tun_fd);
 
 #endif

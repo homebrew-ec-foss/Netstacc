@@ -235,8 +235,7 @@ No JSON, no separate thread, no framework — the "web dashboard" is a raw HTTP/
 
 <br>
 
-![The HTTP response lifecycle: request extraction, in-memory HTML construction, HTTP protocol formatting, packet assembly and dispatch, then session termination](./images/http-lifecycle.png)
-> *Five stages, every time a dashboard request is processed.*
+
 
 <br>
 

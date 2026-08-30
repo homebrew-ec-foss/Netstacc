@@ -151,6 +151,11 @@ A wrong checksum here produces no error — the packet just vanishes, and the cl
 
 <br>
 
+![Wireshark live packet capture on tun0: dissecting raw IPv4 and UDP packets and verifying payload bytes](./images/wireshark.png)
+> *Live packet dissection on `tun0` in Wireshark: verifying packet bytes, IP headers, and raw payload directly on the wire.*
+
+<br>
+
 ---
 
 <br>

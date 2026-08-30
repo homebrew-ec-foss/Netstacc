@@ -142,7 +142,7 @@ A wrong checksum here produces no error — the packet just vanishes, and the cl
 
 <br>
 
-![UDP pseudo-header layout: a 12-byte pseudo-header of source IP, destination IP, a zero byte, protocol number 17, and UDP length, followed by the real 8-byte UDP header of source port, destination port, length, and checksum, then the payload — all 20 header bytes fed into the same checksum algorithm as one continuous buffer](./images/udp.jpeg)
+![UDP pseudo-header layout: a 12-byte pseudo-header of source IP, destination IP, a zero byte, protocol number 17, and UDP length, followed by the real 8-byte UDP header of source port, destination port, length, and checksum, then the payload — all 20 header bytes fed into the same checksum algorithm as one continuous buffer](./images/udp-v2.jpeg)
 > *The pseudo-header exists only for this one calculation — it's never actually sent.*
 
 <br>

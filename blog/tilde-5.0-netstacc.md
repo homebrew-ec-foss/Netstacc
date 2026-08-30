@@ -39,7 +39,7 @@ Netstacc replaces that with a TCP/IP stack written from scratch in C, running en
 
 <br>
 
-![Netstacc architecture: packets flow from the TUN buffer through IPv4 parsing, get routed by the protocol classifier to ICMP, TCP, or UDP handlers, and come back out through the TUN device](./images/architecture.png)
+![Netstacc architecture: packets flow from the TUN buffer through IPv4 parsing, get routed by the protocol classifier to ICMP, TCP, or UDP handlers, and come back out through the TUN device](https://raw.githubusercontent.com/homebrew-ec-foss/Netstacc/main/blog/images/architecture.png)
 > *The full pipeline. Everything downstream of "protocol classifier" is handled by a dedicated parser per protocol.*
 
 <br>
@@ -70,7 +70,7 @@ int tun_alloc(char *dev) {
 
 <br>
 
-![Diagram showing a ping from the host terminal routed through the OS to the tun0 virtual interface, then read into userspace by the Netstacc C engine, which parses the IPv4 header, checks for ICMP, swaps source and destination IPs, flips the ICMP type from 8 to 0, and recalculates checksums before writing the reply back out through tun0](./images/tun.jpg)
+![Diagram showing a ping from the host terminal routed through the OS to the tun0 virtual interface, then read into userspace by the Netstacc C engine, which parses the IPv4 header, checks for ICMP, swaps source and destination IPs, flips the ICMP type from 8 to 0, and recalculates checksums before writing the reply back out through tun0](https://raw.githubusercontent.com/homebrew-ec-foss/Netstacc/main/blog/images/tun.jpg)
 > *Kernel space hands off to userspace at exactly one point: the `read()` call. Everything after that line is ours.*
 
 <br>
@@ -106,7 +106,7 @@ One detail worth flagging: the IHL field stores header length in 32-bit *words*,
 
 <br>
 
-![IPv4 header byte layout: version and IHL, TOS, and total length in the first 4 bytes, then identification, flags, and fragment offset, then TTL, protocol, and header checksum, then the 4-byte source and destination addresses](./images/ipv4.jpeg)
+![IPv4 header byte layout: version and IHL, TOS, and total length in the first 4 bytes, then identification, flags, and fragment offset, then TTL, protocol, and header checksum, then the 4-byte source and destination addresses](https://raw.githubusercontent.com/homebrew-ec-foss/Netstacc/main/blog/images/ipv4.jpeg)
 > *Every field here maps directly to a struct field in `classify_protocol`.*
 
 <br>
@@ -142,7 +142,7 @@ A wrong checksum here produces no error — the packet just vanishes, and the cl
 
 <br>
 
-![UDP pseudo-header layout: a 12-byte pseudo-header of source IP, destination IP, a zero byte, protocol number 17, and UDP length, followed by the real 8-byte UDP header of source port, destination port, length, and checksum, then the payload — all 20 header bytes fed into the same checksum algorithm as one continuous buffer](./images/udp-v2.jpeg)
+![UDP pseudo-header layout: a 12-byte pseudo-header of source IP, destination IP, a zero byte, protocol number 17, and UDP length, followed by the real 8-byte UDP header of source port, destination port, length, and checksum, then the payload — all 20 header bytes fed into the same checksum algorithm as one continuous buffer](https://raw.githubusercontent.com/homebrew-ec-foss/Netstacc/main/blog/images/udp-v2.jpeg)
 > *The pseudo-header exists only for this one calculation — it's never actually sent.*
 
 <br>
@@ -151,7 +151,7 @@ A wrong checksum here produces no error — the packet just vanishes, and the cl
 
 <br>
 
-![Wireshark live packet capture on tun0: dissecting raw IPv4 and UDP packets and verifying payload bytes](./images/wireshark.png)
+![Wireshark live packet capture on tun0: dissecting raw IPv4 and UDP packets and verifying payload bytes](https://raw.githubusercontent.com/homebrew-ec-foss/Netstacc/main/blog/images/wireshark.png)
 > *Live packet dissection on `tun0` in Wireshark: verifying packet bytes, IP headers, and raw payload directly on the wire.*
 
 <br>
@@ -170,7 +170,7 @@ The handshake itself: the client sends `SYN(seq=1000)`, the server responds with
 
 <br>
 
-![TCP three-way handshake: client sends SYN with seq=1000, server replies with SYN-ACK carrying seq=5000 and ack=1001, client sends ACK with ack=5001, after which both sides consider the connection established](./images/tcp.jpeg)
+![TCP three-way handshake: client sends SYN with seq=1000, server replies with SYN-ACK carrying seq=5000 and ack=1001, client sends ACK with ack=5001, after which both sides consider the connection established](https://raw.githubusercontent.com/homebrew-ec-foss/Netstacc/main/blog/images/tcp.jpeg)
 > *Three messages, and a state machine that has to track every one of them correctly.*
 
 <br>
@@ -244,7 +244,7 @@ No JSON, no separate thread, no framework — the "web dashboard" is a raw HTTP/
 
 <br>
 
-![Netstacc dashboard mid-traffic: RX/TX packet and byte counts broken down by ICMP, UDP, and TCP, a drop-diagnostics panel tracking non-IPv4 traffic and bad checksums, and a live view of the active TCP connection's sequence number, ack number, and last action](./images/dashboard-live.png)
+![Netstacc dashboard mid-traffic: RX/TX packet and byte counts broken down by ICMP, UDP, and TCP, a drop-diagnostics panel tracking non-IPv4 traffic and bad checksums, and a live view of the active TCP connection's sequence number, ack number, and last action](https://raw.githubusercontent.com/homebrew-ec-foss/Netstacc/main/blog/images/dashboard-live.png)
 > *Per-protocol counts, drop diagnostics, and the live state of the current TCP connection, updating in real time.*
 
 <br>
@@ -253,7 +253,7 @@ Beyond raw counts, the dashboard tracks per-connection state and flags retransmi
 
 <br>
 
-![Terminal showing tun0 being configured, a successful ping to 10.0.0.2 with real round-trip times, and a UDP packet sent via netcat, next to the dashboard live-updating its ICMP and UDP counters in response](./images/dashboard-terminal.png)
+![Terminal showing tun0 being configured, a successful ping to 10.0.0.2 with real round-trip times, and a UDP packet sent via netcat, next to the dashboard live-updating its ICMP and UDP counters in response](https://raw.githubusercontent.com/homebrew-ec-foss/Netstacc/main/blog/images/dashboard-terminal.png)
 > *Left: the terminal view, redrawing from `live_stats`. Right: the browser view hitting the same struct over HTTP.*
 
 <br>
